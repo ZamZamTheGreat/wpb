@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>
@@ -15,7 +17,7 @@
   <header class="main-header">
     <!-- Left: Back + Language -->
     <div class="header-left">
-      <a href="http://127.0.0.1:7000" class="back-button">← Back to Neuro-Estates</a>
+      <a href="https://neurodirectory.onrender.com/" class="back-button">← Back to Neuro-Estates</a>
       <select id="language-select" class="language-select" name="language-select" aria-label="Select language">
         <option value="en" {% if lang == 'en' %}selected{% endif %}>English</option>
         <option value="af" {% if lang == 'af' %}selected{% endif %}>Afrikaans</option>
@@ -105,10 +107,14 @@
       <div id="loading" aria-live="assertive" aria-atomic="true">Loading...</div>
     </main>
 
-    <!-- Navigation Buttons -->
+    <!-- Navigation Buttons - Form button hidden for Search-AI agent -->
     <section class="nav-buttons" aria-label="Navigation buttons">
       <a href="{{ url_for('home') }}" class="nav-button" role="button" tabindex="0">🏠 Home</a>
-      <a href="{{ tally_form if tally_form else '#' }}" class="nav-button" role="button" tabindex="0" target="_blank" rel="noopener noreferrer">📋 Contact Form</a>
+      
+      {% if agent_id != 'Search-AI' %}
+        <a href="{{ tally_form if tally_form else '#' }}" class="nav-button" role="button" tabindex="0" target="_blank" rel="noopener noreferrer">📋 Form</a>
+      {% endif %}
+      
       <form action="{{ url_for('reset', agent_id=agent_id) }}" method="post" style="display:inline;">
         <button type="submit" class="nav-button">🔄 Reset Chat</button>
       </form>
@@ -220,3 +226,4 @@
     }
   </script>
 </body>
+</html>
