@@ -1,0 +1,222 @@
+<head>
+  <meta charset="UTF-8">
+  <title>
+    {% if agent_id %}
+      {{ agent_id }}
+    {% else %}
+      Windhoek Property Brokers
+    {% endif %}
+  </title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+  <!-- ===== HEADER ===== -->
+  <header class="main-header">
+    <!-- Left: Back + Language -->
+    <div class="header-left">
+      <a href="http://127.0.0.1:7000" class="back-button">← Back to Neuro-Estates</a>
+      <select id="language-select" class="language-select" name="language-select" aria-label="Select language">
+        <option value="en" {% if lang == 'en' %}selected{% endif %}>English</option>
+        <option value="af" {% if lang == 'af' %}selected{% endif %}>Afrikaans</option>
+        <option value="de" {% if lang == 'de' %}selected{% endif %}>German</option>
+        <option value="ng" {% if lang == 'ng' %}selected{% endif %}>Nigerian</option>
+        <option value="zh" {% if lang == 'zh' %}selected{% endif %}>Chinese</option>
+        <option value="pt" {% if lang == 'pt' %}selected{% endif %}>Portuguese</option>
+      </select>
+    </div>
+
+    <!-- Center: Logo + Title -->
+    <div class="header-center">
+      <img src="{{ url_for('static', filename='windhoek-brokers-logo.png') }}" alt="Windhoek Property Brokers Logo" class="logo">
+      <h1 class="site-title">
+        {% if agent_id %}
+          {{ agent_id }}
+        {% else %}
+          Windhoek Property Brokers
+        {% endif %}
+      </h1>
+      {% if not agent_id %}
+        <div class="agent-selector">Select an agent to begin chatting</div>
+      {% endif %}
+    </div>
+
+    <!-- Right: Theme Toggle -->
+    <div class="header-right">
+      <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
+    </div>
+  </header>
+
+  <!-- ===== FLASH MESSAGES ===== -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <section id="flashes" role="alert" aria-live="polite" aria-atomic="true">
+        {% for category, msg in messages %}
+          <div class="flash-message {{ category }}">{{ msg|safe }}</div>
+        {% endfor %}
+      </section>
+    {% endif %}
+  {% endwith %}
+
+  <!-- ===== MAIN CONTENT ===== -->
+  {% if not agent_id %}
+    <!-- Search Bar -->
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Search agent by name or ID..." autocomplete="off">
+      <div id="suggestions" class="suggestions-list"></div>
+    </div>
+
+    <!-- Property Actions -->
+    <div class="button-container">
+      <a href="https://tally.so/r/w7rkX6" class="custom-button">List a Property</a>
+      <a href="/chat/Search-AI" class="custom-button">Search a Property</a>
+    </div>
+
+    <!-- Agent Cards -->
+    <main id="agentGrid" class="agent-list" aria-label="Agent list">
+      {% for agent in agents %}
+        <a href="{{ url_for('chat', agent_id=agent) }}" class="agent-card" role="button" tabindex="0" aria-label="Chat with {{ agent }}">
+          {{ agent }}
+        </a>
+      {% endfor %}
+    </main>
+  {% else %}
+    {% if messages|length == 0 %}
+      <div id="suggested-questions" class="suggested-questions">
+        <h4>💡 Suggested Questions:</h4>
+        <div class="suggestion-bubbles">
+          <button class="suggestion-bubble" onclick="sendSuggested('What can you help me with exactly?')">
+            What can you help me with exactly?
+          </button>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Chat -->
+    <main id="chat" tabindex="0" aria-live="polite" aria-relevant="additions" aria-label="Chat messages">
+      {% for msg in messages %}
+        <article class="message {{ msg.role }}" tabindex="0" aria-label="{{ 'Your message' if msg.role == 'user' else 'Agent reply' }}">
+          <div class="content">{{ msg.content|safe }}</div>
+          {% if msg.timestamp %}
+            <time class="message-time">{{ msg.timestamp }}</time>
+          {% endif %}
+        </article>
+      {% endfor %}
+      <div id="loading" aria-live="assertive" aria-atomic="true">Loading...</div>
+    </main>
+
+    <!-- Navigation Buttons -->
+    <section class="nav-buttons" aria-label="Navigation buttons">
+      <a href="{{ url_for('home') }}" class="nav-button" role="button" tabindex="0">🏠 Home</a>
+      <a href="{{ tally_form if tally_form else '#' }}" class="nav-button" role="button" tabindex="0" target="_blank" rel="noopener noreferrer">📋 Contact Form</a>
+      <form action="{{ url_for('reset', agent_id=agent_id) }}" method="post" style="display:inline;">
+        <button type="submit" class="nav-button">🔄 Reset Chat</button>
+      </form>
+    </section>
+
+    <!-- File Upload (Admin only) -->
+    {% if current_user.is_authenticated and current_user.role == 'admin' %}
+      <div class="upload-container">
+        <form id="upload-form" method="POST" enctype="multipart/form-data" action="/upload">
+          <input type="file" name="rag_file" id="rag_file" hidden onchange="this.form.submit()">
+          <label for="rag_file" class="upload-btn">📄 Upload File</label>
+        </form>
+      </div>
+    {% endif %}
+
+    <!-- Chat Input -->
+    <form id="chat-form" action="{{ url_for('chat', agent_id=agent_id) }}" method="POST" aria-label="Chat input form">
+      <input type="text" id="user_input" name="user_input" placeholder="Type your message..." autocomplete="off" required aria-required="true" aria-label="Message input">
+      <button type="submit" id="submit-btn" aria-label="Send message">Send</button>
+    </form>
+  {% endif %}
+
+  <!-- ===== SCRIPTS ===== -->
+  <script>
+    (() => {
+      const themeToggle = document.getElementById('theme-toggle');
+      const body = document.body;
+
+      function setTheme(theme) {
+        body.setAttribute('data-theme', theme);
+        themeToggle.textContent = theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+        localStorage.setItem('theme', theme);
+      }
+
+      setTheme(localStorage.getItem('theme') || 'light');
+
+      themeToggle?.addEventListener('click', () => {
+        setTheme(body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+      });
+
+      document.getElementById('language-select')?.addEventListener('change', async e => {
+        try {
+          const res = await fetch('/set_language', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ language: e.target.value })
+          });
+          if (res.ok) location.reload();
+          else alert('Language update failed.');
+        } catch {
+          alert('Language update failed.');
+        }
+      });
+    })();
+
+    // Suggested Question Buttons
+    function sendSuggested(text) {
+      document.getElementById('user_input').value = text;
+      document.getElementById('chat-form').submit();
+    }
+
+    // Agent Search
+    if (document.getElementById('searchInput')) {
+      const searchInput = document.getElementById('searchInput');
+      const suggestionsDiv = document.getElementById('suggestions');
+      const agentCards = document.querySelectorAll('.agent-card');
+      const agents = Array.from(agentCards).map(c => c.textContent.trim());
+
+      function updateSuggestions() {
+        const query = searchInput.value.toLowerCase().trim();
+        suggestionsDiv.innerHTML = '';
+        if (!query) return;
+
+        agents.filter(a => a.toLowerCase().includes(query)).forEach(name => {
+          const btn = document.createElement('button');
+          btn.textContent = name;
+          btn.className = 'suggestion-btn';
+          btn.type = 'button';
+          btn.onclick = () => scrollToAgent(name);
+          suggestionsDiv.appendChild(btn);
+        });
+      }
+
+      function scrollToAgent(name) {
+        const card = Array.from(agentCards).find(c => c.textContent.trim() === name);
+        if (card) {
+          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          card.style.transition = 'all 0.4s ease';
+          card.style.border = '2px solid var(--primary)';
+          card.style.boxShadow = '0 0 12px 4px rgba(0,150,136,0.6)';
+          card.style.backgroundColor = 'rgba(0,150,136,0.1)';
+          setTimeout(() => {
+            card.style.border = '';
+            card.style.boxShadow = '';
+            card.style.backgroundColor = '';
+          }, 2000);
+        }
+        suggestionsDiv.innerHTML = '';
+        searchInput.value = name;
+      }
+
+      searchInput.addEventListener('input', updateSuggestions);
+      searchInput.addEventListener('keypress', e => {
+        if (e.key === 'Enter') {
+          const first = suggestionsDiv.querySelector('button');
+          if (first) first.click();
+        }
+      });
+    }
+  </script>
+</body>

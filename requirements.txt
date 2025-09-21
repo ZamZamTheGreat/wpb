@@ -1,0 +1,17 @@
+flask
+flask-login
+flask-session
+redis
+openai>=1.0.0
+langchain
+faiss-cpu
+python-dotenv
+werkzeug
+docx2txt
+PyPDF2            
+unstructured      
+tqdm              
+beautifulsoup4    
+lxml              
+html5lib          
+gunicorn
