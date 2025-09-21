@@ -81,17 +81,14 @@
       {% endfor %}
     </main>
   {% else %}
-    {% if messages|length == 0 %}
-      <div id="suggested-questions" class="suggested-questions">
-        <h4>💡 Suggested Questions:</h4>
-        <div class="suggestion-bubbles">
-          <button class="suggestion-bubble" onclick="sendSuggested('What can you help me with exactly?')">
-            What can you help me with exactly?
-          </button>
+            {% if agent_id != 'Search-AI' %}
+     <div class="suggested-questions" id="suggested-questions">
+         <h4>💡 Suggested Questions:</h4>
+          <div class="suggestion-bubbles">
+            <button class="suggestion-bubble" onclick="sendSuggested('What can you help me with exactly?')">What can you help me with exactly?</button>
+         </div>
         </div>
-      </div>
-    {% endif %}
-
+      {% endif %}
     <!-- Chat -->
     <main id="chat" tabindex="0" aria-live="polite" aria-relevant="additions" aria-label="Chat messages">
       {% for msg in messages %}
@@ -130,6 +127,7 @@
       <button type="submit" id="submit-btn" aria-label="Send message">Send</button>
     </form>
   {% endif %}
+
 
   <!-- ===== SCRIPTS ===== -->
   <script>
