@@ -148,8 +148,9 @@ function processLinksInChat() {
     let html = message.innerHTML;
 
     // Convert only https URLs to clickable "View Property" button
+    // Excludes trailing punctuation or parentheses
     html = html.replace(
-      /(https:\/\/[^\s<]+)/gi,
+      /(https:\/\/[^\s<")]+)/gi,
       '<a href="$1" target="_blank" rel="noopener" class="property-link">View Property</a>'
     );
 
@@ -191,11 +192,12 @@ function addSampleMessage() {
   const contentDiv = document.createElement('div');
   contentDiv.className = 'content';
   contentDiv.innerHTML =
-    'Check this property: https://example.com/properties/1234';
+    'Check these properties: https://example.com/properties/1234 and https://example.com/properties/5678';
 
   newMessage.appendChild(contentDiv);
   chat.appendChild(newMessage);
-  processLinksInChat(); // Convert the https link into a "View Property" button
+
+  processLinksInChat(); // Convert the https links into "View Property" buttons
 }
 
     // Theme toggle functionality

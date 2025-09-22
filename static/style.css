@@ -1125,17 +1125,21 @@ button {
   display: inline-block;
   background-color: rgba(255, 215, 0, 0.1);
   border: 1px solid var(--accent);
-  border-radius: 6px;
-  padding: 0.5rem 1rem;
-  margin: 0.5rem 0;
-  transition: all 0.3s ease;
+  border-radius: 4px;        /* slightly smaller corners */
+  padding: 0.25rem 0.6rem;   /* smaller padding */
+  margin: 0.25rem 0;         /* smaller vertical spacing */
+  font-size: 0.85rem;        /* smaller font */
+  text-decoration: none;      /* remove underline */
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .property-link:hover {
   background-color: rgba(255, 215, 0, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);  /* smaller hover movement */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 
 /* Link preview styling (optional) */
 .link-preview {
