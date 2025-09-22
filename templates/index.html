@@ -104,7 +104,6 @@
         {% endfor %}
         <div id="loading" aria-live="assertive" aria-atomic="true">Loading...</div>
       </main>
-
       <!-- Navigation Buttons -->
       <section class="nav-buttons" aria-label="Navigation buttons">
         <a href="{{ url_for('home') }}" class="nav-button" role="button" tabindex="0">🏠 Home</a>
@@ -138,6 +137,67 @@
 
   <!-- ===== SCRIPTS ===== -->
   <script>
+     // Function to detect and process https links in chat messages
+function processLinksInChat() {
+  const messages = document.querySelectorAll('.message .content');
+
+  messages.forEach((message) => {
+    // Skip messages that already contain links
+    if (message.querySelector('a')) return;
+
+    let html = message.innerHTML;
+
+    // Convert only https URLs to clickable "View Property" button
+    html = html.replace(
+      /(https:\/\/[^\s<]+)/gi,
+      '<a href="$1" target="_blank" rel="noopener" class="property-link">View Property</a>'
+    );
+
+    message.innerHTML = html;
+  });
+}
+
+// Observe chat container for new messages and process links
+function observeChatChanges() {
+  const chatContainer = document.getElementById('chat');
+  if (!chatContainer) return;
+
+  // Process existing messages initially
+  processLinksInChat();
+
+  // Set up a MutationObserver to handle newly added messages
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.addedNodes.length) {
+        processLinksInChat();
+      }
+    });
+  });
+
+  observer.observe(chatContainer, { childList: true, subtree: true });
+}
+
+// Initialize link processing when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  observeChatChanges();
+});
+
+// Function to add a sample message (for testing)
+function addSampleMessage() {
+  const chat = document.getElementById('chat');
+  const newMessage = document.createElement('article');
+  newMessage.className = 'message assistant';
+
+  const contentDiv = document.createElement('div');
+  contentDiv.className = 'content';
+  contentDiv.innerHTML =
+    'Check this property: https://example.com/properties/1234';
+
+  newMessage.appendChild(contentDiv);
+  chat.appendChild(newMessage);
+  processLinksInChat(); // Convert the https link into a "View Property" button
+}
+
     // Theme toggle functionality
     (() => {
       const themeToggle = document.getElementById('theme-toggle');

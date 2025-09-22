@@ -196,6 +196,7 @@ def chat_url_for(agent_name: str) -> str:
     
 # ─── Agents ──────────────────────────────────────────────────────────────────
 AGENT_CONFIG = {
+    'Julie-AI': {'system_prompt': load_prompt('Julie')},
     'Ruanca-AI': {'system_prompt':load_prompt('Ruanca')},
     'Carl-AI': {'system_prompt':load_prompt('Carl')},
     'Natalie-AI': {'system_prompt': load_prompt('Natalie')},
@@ -337,66 +338,58 @@ def home():
 
 @app.route('/chat/<agent_id>', methods=['GET', 'POST'])
 def chat(agent_id):
+    # Validate agent
     if agent_id not in AGENT_CONFIG:
         flash('Unknown agent', 'error')
         return redirect(url_for('home'))
 
     data = user_agent_data(agent_id)
-    messages = data['history']
-    tally_form_url = TALLY_FORMS.get(agent_id, None)
+    messages = data.get('history', [])
+    tally_form_url = TALLY_FORMS.get(agent_id)
     agent_docs = AGENT_DOCUMENTS.get(agent_id, [])
 
-    # Handle multiple document names safely
+    # Load global documents for this agent
     global_docs = load_global_docs()
     doc_list = global_docs.get(agent_id, [])
-    if isinstance(doc_list, list) and len(doc_list) > 0:
+    if isinstance(doc_list, list) and doc_list:
         data['document_name'] = [os.path.basename(p) for p in doc_list]
     elif isinstance(doc_list, str):
         data['document_name'] = [os.path.basename(doc_list)]
     else:
         data['document_name'] = []
 
-    # Format timestamps
+    # Format timestamps for display
     for msg in messages:
-        if msg.get('timestamp') and not isinstance(msg['timestamp'], str):
-            msg['timestamp'] = msg['timestamp'].strftime("%Y-%m-%d %H:%M:%S")
+        ts = msg.get('timestamp')
+        if ts and not isinstance(ts, str):
+            msg['timestamp'] = ts.strftime("%Y-%m-%d %H:%M:%S")
 
     lang = session.get('language', 'en')
 
     if request.method == 'POST':
         text = request.form.get('user_input', '').strip()
         if text:
-            # Handle Search-AI behavior
+            ts = datetime.now()
+
+            # Special handling for Search-AI
             if agent_id == 'Search-AI':
-                ts = datetime.now()
                 data['history'].append({'role': 'user', 'content': text, 'timestamp': ts})
 
-                # Query all visible agents (excluding Search-AI & Head of property-AI)
-                internal_agents = [
-                    a for a in AGENT_CONFIG.keys()
-                    if a not in ['Search-AI', 'Head of property-AI']
-                ]
+                # Query internal agents
+                internal_agents = [a for a in AGENT_CONFIG.keys() if a not in ['Search-AI', 'Head of property-AI']]
                 internal_responses = {}
 
                 for ia in internal_agents:
                     ia_data = user_agent_data(ia)
                     agent_reply = agent_ask(ia, text, ia_data)
-
-                    # Attach the link at the bottom of each agent’s listing
-                    formatted = format_listing(ia, agent_reply)
+                    formatted = format_listing(ia, agent_reply)  # Add links here
                     internal_responses[ia] = formatted
 
-                # Summarize and ask Head of Property-AI
+                # Summarize for Head of Property-AI
                 summary_prompt = [
-                    "The user is searching for a property. Query:",
-                    f"\"{text}\"",
+                    f"The user is searching for a property. Query: \"{text}\"",
                     "",
-                    "Here are responses from the agents. For each listing, a 'Chat with <Agent>' link",
-                    "has been appended at the bottom. IMPORTANT RULES:",
-                    "1) If you shortlist or present any listing, include it verbatim with its link.",
-                    "2) Do NOT remove or rewrite the links.",
-                    "3) If multiple agents match, group by area/type and keep the link under each listing.",
-                    ""
+                    "Responses from agents with links included:"
                 ]
                 for ag, resp in internal_responses.items():
                     summary_prompt.append(f"--- Agent: {ag} ---")
@@ -406,7 +399,7 @@ def chat(agent_id):
                 head_data = user_agent_data('Head of property-AI')
                 final_answer = agent_ask('Head of property-AI', "\n".join(summary_prompt), head_data)
 
-                # Add a safety-net sources section at the bottom
+                # Append contact links at bottom
                 try:
                     sources_html = "<br>".join(
                         f"• <a href='{chat_url_for(a)}'>{escape(a)}</a>"
@@ -420,37 +413,33 @@ def chat(agent_id):
                 session.modified = True
                 return redirect(url_for('chat', agent_id=agent_id))
 
-            # Handle form trigger
+            # Tally form trigger
             if any(phrase in text.lower() for phrase in ['leave my details', 'contact form', '📋']):
-                form_link = TALLY_FORMS.get(agent_id)
-                if form_link:
-                    response = f"📋 Please <a href='{form_link}' target='_blank'>fill out this short form</a> so your agent can get in touch with you."
-                    data['history'].append({'role': 'assistant', 'content': response, 'timestamp': datetime.now()})
+                if tally_form_url:
+                    response = f"📋 Please <a href='{tally_form_url}' target='_blank'>fill out this short form</a> so your agent can get in touch with you."
+                    data['history'].append({'role': 'assistant', 'content': response, 'timestamp': ts})
                     session.modified = True
                     return redirect(url_for('chat', agent_id=agent_id))
 
             # Regular agent handling
-            _ = agent_ask(agent_id, text, data)
+            agent_ask(agent_id, text, data)
 
         return redirect(url_for('chat', agent_id=agent_id))
 
-    # GET method rendering
+    # GET: render chat page
     return render_template(
         'index.html',
         agent_id=agent_id,
-        messages=data['history'],
-        agents=[
-            a for a in AGENT_CONFIG.keys()
-            if a not in ['Search-AI', 'Head of property-AI']
-        ],
+        messages=messages,
+        agents=[a for a in AGENT_CONFIG.keys() if a not in ['Search-AI', 'Head of property-AI']],
         AGENT_CONFIG=AGENT_CONFIG,
         TALLY_FORMS=TALLY_FORMS,
-        document_name=data.get('document_name'),
+        document_name=data.get('document_name', []),
         lang=lang,
         datetime=datetime,
         tally_form=tally_form_url
     )
- 
+
 @app.route('/upload/<agent_id>', methods=['GET', 'POST'])
 @login_required
 def upload(agent_id):
