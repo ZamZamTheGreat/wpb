@@ -1,5 +1,6 @@
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>
     {% if agent_id %}
       {{ agent_id }}
@@ -11,126 +12,133 @@
 </head>
 
 <body>
-  <!-- ===== HEADER ===== -->
-  <header class="main-header">
-    <!-- Left: Back + Language -->
-    <div class="header-left">
-      <a href="http://127.0.0.1:7000" class="back-button">← Back to Neuro-Estates</a>
-      <select id="language-select" class="language-select" name="language-select" aria-label="Select language">
-        <option value="en" {% if lang == 'en' %}selected{% endif %}>English</option>
-        <option value="af" {% if lang == 'af' %}selected{% endif %}>Afrikaans</option>
-        <option value="de" {% if lang == 'de' %}selected{% endif %}>German</option>
-        <option value="ng" {% if lang == 'ng' %}selected{% endif %}>Nigerian</option>
-        <option value="zh" {% if lang == 'zh' %}selected{% endif %}>Chinese</option>
-        <option value="pt" {% if lang == 'pt' %}selected{% endif %}>Portuguese</option>
-      </select>
-    </div>
+  <div class="page-wrapper">
+    <!-- ===== HEADER ===== -->
+    <header class="main-header">
+      <!-- Left: Back + Language -->
+      <div class="header-left">
+        <a href="https://neurodirectory.onrender.com/" class="back-button">← Back to Neuro-Estates</a>
+        <select id="language-select" class="language-select" name="language-select" aria-label="Select language">
+          <option value="en" {% if lang == 'en' %}selected{% endif %}>English</option>
+          <option value="af" {% if lang == 'af' %}selected{% endif %}>Afrikaans</option>
+          <option value="de" {% if lang == 'de' %}selected{% endif %}>German</option>
+          <option value="ng" {% if lang == 'ng' %}selected{% endif %}>Nigerian</option>
+          <option value="zh" {% if lang == 'zh' %}selected{% endif %}>Chinese</option>
+          <option value="pt" {% if lang == 'pt' %}selected{% endif %}>Portuguese</option>
+        </select>
+      </div>
 
-    <!-- Center: Logo + Title -->
-    <div class="header-center">
-      <img src="{{ url_for('static', filename='windhoek-brokers-logo.png') }}" alt="Windhoek Property Brokers Logo" class="logo">
-      <h1 class="site-title">
-        {% if agent_id %}
-          {{ agent_id }}
-        {% else %}
-          Windhoek Property Brokers
+      <!-- Center: Logo + Title -->
+      <div class="header-center">
+        <img src="{{ url_for('static', filename='windhoek-brokers-logo.png') }}" alt="Windhoek Property Brokers Logo" class="logo">
+        <h1 class="site-title">
+          {% if agent_id %}
+            {{ agent_id }}
+          {% else %}
+            Windhoek Property Brokers
+          {% endif %}
+        </h1>
+        {% if not agent_id %}
+          <div class="agent-selector">Select an agent to begin chatting</div>
         {% endif %}
-      </h1>
-      {% if not agent_id %}
-        <div class="agent-selector">Select an agent to begin chatting</div>
+      </div>
+
+      <!-- Right: Theme Toggle -->
+      <div class="header-right">
+        <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
+      </div>
+    </header>
+
+    <!-- ===== FLASH MESSAGES ===== -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <section id="flashes" role="alert" aria-live="polite" aria-atomic="true">
+          {% for category, msg in messages %}
+            <div class="flash-message {{ category }}">{{ msg|safe }}</div>
+          {% endfor %}
+        </section>
       {% endif %}
-    </div>
+    {% endwith %}
 
-    <!-- Right: Theme Toggle -->
-    <div class="header-right">
-      <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
-    </div>
-  </header>
+    <!-- ===== MAIN CONTENT ===== -->
+    {% if not agent_id %}
+      <!-- Search Bar -->
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search agent by name or ID..." autocomplete="off">
+        <div id="suggestions" class="suggestions-list"></div>
+      </div>
 
-  <!-- ===== FLASH MESSAGES ===== -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <section id="flashes" role="alert" aria-live="polite" aria-atomic="true">
-        {% for category, msg in messages %}
-          <div class="flash-message {{ category }}">{{ msg|safe }}</div>
+      <!-- Property Actions -->
+      <div class="button-container">
+        <a href="https://tally.so/r/w7rkX6" class="custom-button">List a Property</a>
+        <a href="/chat/Search-AI" class="custom-button">Search a Property</a>
+      </div>
+
+      <!-- Agent Cards -->
+      <main id="agentGrid" class="agent-list" aria-label="Agent list">
+        {% for agent in agents %}
+          <a href="{{ url_for('chat', agent_id=agent) }}" class="agent-card" role="button" tabindex="0" aria-label="Chat with {{ agent }}">
+            {{ agent }}
+          </a>
         {% endfor %}
-      </section>
-    {% endif %}
-  {% endwith %}
-
-  <!-- ===== MAIN CONTENT ===== -->
-  {% if not agent_id %}
-    <!-- Search Bar -->
-    <div class="search-container">
-      <input type="text" id="searchInput" placeholder="Search agent by name or ID..." autocomplete="off">
-      <div id="suggestions" class="suggestions-list"></div>
-    </div>
-
-    <!-- Property Actions -->
-    <div class="button-container">
-      <a href="https://tally.so/r/w7rkX6" class="custom-button">List a Property</a>
-      <a href="/chat/Search-AI" class="custom-button">Search a Property</a>
-    </div>
-
-    <!-- Agent Cards -->
-    <main id="agentGrid" class="agent-list" aria-label="Agent list">
-      {% for agent in agents %}
-        <a href="{{ url_for('chat', agent_id=agent) }}" class="agent-card" role="button" tabindex="0" aria-label="Chat with {{ agent }}">
-          {{ agent }}
-        </a>
-      {% endfor %}
-    </main>
-  {% else %}
-            {% if agent_id != 'Search-AI' %}
-     <div class="suggested-questions" id="suggested-questions">
-         <h4>💡 Suggested Questions:</h4>
+      </main>
+    {% else %}
+      {% if agent_id != 'Search-AI' %}
+        <div class="suggested-questions" id="suggested-questions">
+          <h4>💡 Suggested Questions:</h4>
           <div class="suggestion-bubbles">
             <button class="suggestion-bubble" onclick="sendSuggested('What can you help me with exactly?')">What can you help me with exactly?</button>
-         </div>
+          </div>
         </div>
       {% endif %}
-    <!-- Chat -->
-    <main id="chat" tabindex="0" aria-live="polite" aria-relevant="additions" aria-label="Chat messages">
-      {% for msg in messages %}
-        <article class="message {{ msg.role }}" tabindex="0" aria-label="{{ 'Your message' if msg.role == 'user' else 'Agent reply' }}">
-          <div class="content">{{ msg.content|safe }}</div>
-          {% if msg.timestamp %}
-            <time class="message-time">{{ msg.timestamp }}</time>
-          {% endif %}
-        </article>
-      {% endfor %}
-      <div id="loading" aria-live="assertive" aria-atomic="true">Loading...</div>
-    </main>
+      
+      <!-- Chat -->
+      <main id="chat" tabindex="0" aria-live="polite" aria-relevant="additions" aria-label="Chat messages">
+        {% for msg in messages %}
+          <article class="message {{ msg.role }}" tabindex="0" aria-label="{{ 'Your message' if msg.role == 'user' else 'Agent reply' }}">
+            <div class="content">{{ msg.content|safe }}</div>
+            {% if msg.timestamp %}
+              <time class="message-time">{{ msg.timestamp }}</time>
+            {% endif %}
+          </article>
+        {% endfor %}
+        <div id="loading" aria-live="assertive" aria-atomic="true">Loading...</div>
+      </main>
 
-    <!-- Navigation Buttons -->
-    <section class="nav-buttons" aria-label="Navigation buttons">
-      <a href="{{ url_for('home') }}" class="nav-button" role="button" tabindex="0">🏠 Home</a>
-      <a href="{{ tally_form if tally_form else '#' }}" class="nav-button" role="button" tabindex="0" target="_blank" rel="noopener noreferrer">📋 Contact Form</a>
-      <form action="{{ url_for('reset', agent_id=agent_id) }}" method="post" style="display:inline;">
-        <button type="submit" class="nav-button">🔄 Reset Chat</button>
-      </form>
-    </section>
-
-    <!-- File Upload (Admin only) -->
-    {% if current_user.is_authenticated and current_user.role == 'admin' %}
-      <div class="upload-container">
-        <form id="upload-form" method="POST" enctype="multipart/form-data" action="/upload">
-          <input type="file" name="rag_file" id="rag_file" hidden onchange="this.form.submit()">
-          <label for="rag_file" class="upload-btn">📄 Upload File</label>
+      <!-- Navigation Buttons -->
+      <section class="nav-buttons" aria-label="Navigation buttons">
+        <a href="{{ url_for('home') }}" class="nav-button" role="button" tabindex="0">🏠 Home</a>
+        
+        {% if agent_id != 'Search-AI' %}
+          <a href="{{ tally_form if tally_form else '#' }}" class="nav-button" role="button" tabindex="0" target="_blank" rel="noopener noreferrer">📋 Contact Form</a>
+        {% endif %}
+        
+        <form action="{{ url_for('reset', agent_id=agent_id) }}" method="post" style="display:inline;">
+          <button type="submit" class="nav-button">🔄 Reset Chat</button>
         </form>
-      </div>
+      </section>
+
+      <!-- File Upload (Admin only) -->
+      {% if current_user.is_authenticated and current_user.role == 'admin' %}
+        <div class="upload-container">
+          <form id="upload-form" method="POST" enctype="multipart/form-data" action="/upload">
+            <input type="file" name="rag_file" id="rag_file" hidden onchange="this.form.submit()">
+            <label for="rag_file" class="upload-btn">📄 Upload File</label>
+          </form>
+        </div>
+      {% endif %}
+
+      <!-- Chat Input -->
+      <form id="chat-form" action="{{ url_for('chat', agent_id=agent_id) }}" method="POST" aria-label="Chat input form">
+        <input type="text" id="user_input" name="user_input" placeholder="Type your message..." autocomplete="off" required aria-required="true" aria-label="Message input">
+        <button type="submit" id="submit-btn" aria-label="Send message">Send</button>
+      </form>
     {% endif %}
-
-    <!-- Chat Input -->
-    <form id="chat-form" action="{{ url_for('chat', agent_id=agent_id) }}" method="POST" aria-label="Chat input form">
-      <input type="text" id="user_input" name="user_input" placeholder="Type your message..." autocomplete="off" required aria-required="true" aria-label="Message input">
-      <button type="submit" id="submit-btn" aria-label="Send message">Send</button>
-    </form>
-  {% endif %}
-
+  </div>
 
   <!-- ===== SCRIPTS ===== -->
   <script>
+    // Theme toggle functionality
     (() => {
       const themeToggle = document.getElementById('theme-toggle');
       const body = document.body;
@@ -168,53 +176,116 @@
       document.getElementById('chat-form').submit();
     }
 
-    // Agent Search
-    if (document.getElementById('searchInput')) {
+    // Enhanced Search functionality with auto-suggestions
+    document.addEventListener('DOMContentLoaded', function() {
       const searchInput = document.getElementById('searchInput');
-      const suggestionsDiv = document.getElementById('suggestions');
-      const agentCards = document.querySelectorAll('.agent-card');
-      const agents = Array.from(agentCards).map(c => c.textContent.trim());
-
-      function updateSuggestions() {
-        const query = searchInput.value.toLowerCase().trim();
-        suggestionsDiv.innerHTML = '';
-        if (!query) return;
-
-        agents.filter(a => a.toLowerCase().includes(query)).forEach(name => {
-          const btn = document.createElement('button');
-          btn.textContent = name;
-          btn.className = 'suggestion-btn';
-          btn.type = 'button';
-          btn.onclick = () => scrollToAgent(name);
-          suggestionsDiv.appendChild(btn);
+      const suggestionsList = document.getElementById('suggestions');
+      const agentGrid = document.getElementById('agentGrid');
+      
+      if (!searchInput || !suggestionsList || !agentGrid) return;
+      
+      // Get all agent cards
+      const agentCards = Array.from(agentGrid.getElementsByClassName('agent-card'));
+      const agentNames = agentCards.map(card => card.textContent.trim());
+      
+      // Filter agents based on search
+      function filterAgents(searchText) {
+        const searchLower = searchText.toLowerCase();
+        
+        agentCards.forEach(card => {
+          const agentName = card.textContent.trim().toLowerCase();
+          if (agentName.includes(searchLower)) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
         });
       }
-
-      function scrollToAgent(name) {
-        const card = Array.from(agentCards).find(c => c.textContent.trim() === name);
-        if (card) {
-          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          card.style.transition = 'all 0.4s ease';
-          card.style.border = '2px solid var(--primary)';
-          card.style.boxShadow = '0 0 12px 4px rgba(0,150,136,0.6)';
-          card.style.backgroundColor = 'rgba(0,150,136,0.1)';
-          setTimeout(() => {
-            card.style.border = '';
-            card.style.boxShadow = '';
-            card.style.backgroundColor = '';
-          }, 2000);
+      
+      // Display suggestions in the dropdown
+      function displaySuggestions(suggestions) {
+        suggestionsList.innerHTML = '';
+        
+        if (suggestions.length === 0) {
+          suggestionsList.style.display = 'none';
+          return;
         }
-        suggestionsDiv.innerHTML = '';
-        searchInput.value = name;
+        
+        suggestions.forEach(suggestion => {
+          const div = document.createElement('div');
+          div.className = 'suggestion-item';
+          div.textContent = suggestion;
+          div.addEventListener('click', function() {
+            searchInput.value = suggestion;
+            filterAgents(suggestion);
+            suggestionsList.style.display = 'none';
+            
+            // Find and highlight the agent card
+            const targetCard = agentCards.find(card => 
+              card.textContent.trim() === suggestion
+            );
+            
+            if (targetCard) {
+              // Remove any existing highlights
+              agentCards.forEach(card => card.classList.remove('highlighted'));
+              
+              // Add highlight to the target card
+              targetCard.classList.add('highlighted');
+              
+              // Scroll to the card
+              targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              
+              // Remove highlight after 3 seconds
+              setTimeout(() => {
+                targetCard.classList.remove('highlighted');
+              }, 3000);
+            }
+          });
+          suggestionsList.appendChild(div);
+        });
+        
+        suggestionsList.style.display = 'flex';
       }
-
-      searchInput.addEventListener('input', updateSuggestions);
-      searchInput.addEventListener('keypress', e => {
-        if (e.key === 'Enter') {
-          const first = suggestionsDiv.querySelector('button');
-          if (first) first.click();
+      
+      // Show suggestions when user starts typing
+      searchInput.addEventListener('input', function() {
+        const searchText = this.value.toLowerCase();
+        
+        if (searchText.length === 0) {
+          suggestionsList.style.display = 'none';
+          // Show all agents if search is empty
+          agentCards.forEach(card => {
+            card.style.display = 'block';
+            card.classList.remove('highlighted');
+          });
+          return;
+        }
+        
+        const filteredSuggestions = agentNames.filter(name => 
+          name.toLowerCase().includes(searchText)
+        );
+        
+        displaySuggestions(filteredSuggestions);
+        filterAgents(searchText);
+      });
+      
+      // Hide suggestions when clicking outside
+      document.addEventListener('click', function(e) {
+        if (e.target !== searchInput && !suggestionsList.contains(e.target)) {
+          suggestionsList.style.display = 'none';
         }
       });
-    }
+      
+      // Show suggestions when input is focused and has text
+      searchInput.addEventListener('focus', function() {
+        if (this.value.length > 0) {
+          const searchText = this.value.toLowerCase();
+          const filteredSuggestions = agentNames.filter(name => 
+            name.toLowerCase().includes(searchText)
+          );
+          displaySuggestions(filteredSuggestions);
+        }
+      });
+    });
   </script>
 </body>

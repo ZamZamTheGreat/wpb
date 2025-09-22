@@ -1,89 +1,144 @@
 :root {
-  --primary: #e6e6e6;          /* Softer off-white for main text */
-  --primary-dark: #cccccc;     /* Light gray for accents */
-  --primary-light: #ffffff;    /* Pure white for highlights */
+  /* === CORE BRAND COLORS === */
+  --primary: #002366;          /* Royal blue (main brand) */
+  --primary-dark: #00163d;     /* Deeper royal/navy blue */
+  --primary-light: #334a8a;    /* Softer royal blue for highlights */
 
-  --accent: #ffcc33;           /* Brighter gold/yellow (stronger than before) */
-  --accent-dark: #cc9900;      /* Darker gold for hover states */
+  --accent: #FFD700;           /* Bright gold (main accent) */
+  --accent-dark: #B8860B;      /* Dark goldenrod for hover states */
+  --accent-light: #fff8dc;     /* Light gold/cream background */
 
-  --background-dark: #0a0a1f;  /* Dark navy (more contrast with white text) */
-  --background-light: #f2f4f8; /* Softer light gray/white for readability */
+  /* === BACKGROUND COLORS === */
+  --background-dark: #0a0a1f;  /* Almost black navy */
+  --background-light: #f8f9fc; /* Very soft white-blue tint */
 
-  --card-bg-dark: #1a1a3d;     /* Medium navy for contrast against dark bg */
-  --card-bg-light: #ffffff;    /* White for clarity in light mode */
+  /* === CARD COLORS === */
+  --card-bg-dark: #14213d;     /* Rich navy for dark mode cards */
+  --card-bg-light: #ffffff;    /* White for light mode cards */
 
-  --text-dark: #f5f5f5;        /* Very light gray (softer than pure white, easier on eyes) */
-  --text-light: #1a1a3d;       /* Dark navy text (readable on light bg) */
+  /* === TEXT COLORS === */
+  --text-dark: #f5f5f5;        /* Light text for dark mode */
+  --text-light: #1a1a3d;       /* Deep navy text for light mode */
 
+  /* === DESIGN TOKENS === */
   --border-radius: 12px;
   --max-width: 720px;
   --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   --transition-speed: 0.3s;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
 
-    [data-theme="dark"] {
-      background-color: var(--background-dark);
-      color: var(--text-dark);
-    }
+/* ===== DARK THEME ===== */
+[data-theme="dark"] {
+  background-color: var(--background-dark);
+  color: var(--text-dark);
+}
 
-    [data-theme="dark"] header {
-      background-color: var(--primary-dark);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.8);
-    }
-    [data-theme="dark"] .card, [data-theme="dark"] .agent-card {
-      background-color: var(--card-bg-dark);
-      color: var(--text-dark);
-      box-shadow: 0 4px 20px rgba(63,81,181,0.6);
-    }
-    [data-theme="dark"] .message.user {
-      background-color: var(--primary-light);
-      color: var(--background-dark);
-    }
-    [data-theme="dark"] .message.assistant {
-      background-color: var(--card-bg-dark);
-      color: var(--text-dark);
-    }
-    [data-theme="dark"] form#chat-form {
-      background-color: var(--primary-dark);
-      border-top: 1px solid var(--primary-light);
-      box-shadow: 0 -3px 8px rgba(0,0,0,0.8);
-    }
-    [data-theme="dark"] input[name="user_input"] {
-      background-color: var(--card-bg-dark);
-      color: var(--text-dark);
-      border-color: var(--primary-light);
-    }
-    [data-theme="dark"] input[name="user_input"]:focus {
-      box-shadow: 0 0 10px var(--primary-light);
-    }
-    [data-theme="dark"] button#submit-btn {
-      background-color: var(--primary-dark);
-      color: var(--text-dark);
-    }
-    [data-theme="dark"] button#submit-btn:hover:not(:disabled),
-    [data-theme="dark"] button#submit-btn:focus:not(:disabled) {
-      background-color: var(--primary-light);
-      color: var(--background-dark);
-    }
-    [data-theme="dark"] .flash-message.success {
-      background: #2ecc40;
-      color: #121212;
-    }
-    [data-theme="dark"] .flash-message.error {
-      background: #ff4136;
-      color: #121212;
-    }
-    [data-theme="dark"] .flash-message.info {
-      background: var(--primary);
-      color: #121212;
-    }
-    [data-theme="dark"] .flash-message.warning {
-      background: #ffdc00;
-      color: #121212;
-    }
+[data-theme="dark"] header {
+  background-color: var(--primary-dark);
+  box-shadow: var(--shadow-md);
+}
 
-    /* Light theme (default) */
+[data-theme="dark"] .card, 
+[data-theme="dark"] .agent-card {
+  background-color: var(--card-bg-dark);
+  color: var(--text-dark);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+}
+
+[data-theme="dark"] .message.user {
+  background-color: var(--primary-light);
+  color: var(--background-dark);
+}
+
+[data-theme="dark"] .message.assistant {
+  background-color: var(--card-bg-dark);
+  color: var(--text-dark);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] form#chat-form {
+  background-color: var(--primary-dark);
+  border-top: 1px solid var(--primary-light);
+  box-shadow: 0 -3px 8px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] input[name="user_input"] {
+  background-color: var(--card-bg-dark);
+  color: var(--text-dark);
+  border-color: var(--primary-light);
+}
+
+[data-theme="dark"] input[name="user_input"]:focus {
+  box-shadow: 0 0 10px var(--primary-light);
+}
+
+[data-theme="dark"] button#submit-btn {
+  background-color: var(--primary-dark);
+  color: var(--text-dark);
+}
+
+[data-theme="dark"] button#submit-btn:hover:not(:disabled),
+[data-theme="dark"] button#submit-btn:focus:not(:disabled) {
+  background-color: var(--primary-light);
+  color: var(--background-dark);
+}
+
+[data-theme="dark"] .flash-message.success {
+  background: linear-gradient(135deg, #2ecc40, #27ae60);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .flash-message.error {
+  background: linear-gradient(135deg, #ff4136, #e74c3c);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .flash-message.info {
+  background: linear-gradient(135deg, var(--primary), #3498db);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .flash-message.warning {
+  background: linear-gradient(135deg, #ffdc00, #f39c12);
+  color: #222;
+}
+
+[data-theme="dark"] .search-container #searchInput {
+  background-color: var(--card-bg-dark);
+  color: var(--text-dark);
+  border-color: var(--primary-light);
+}
+
+[data-theme="dark"] .suggestions-list {
+  background: var(--card-bg-dark);
+  border-color: var(--primary-light);
+}
+
+[data-theme="dark"] .suggestion-btn {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-dark);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .suggestion-btn:hover {
+  background: var(--primary);
+  color: var(--background-dark);
+}
+
+[data-theme="dark"] .suggestion-bubble {
+  background-color: rgba(224, 247, 250, 0.1);
+  color: #4fd1c5;
+}
+
+[data-theme="dark"] .suggestion-bubble:hover {
+  background-color: var(--primary);
+  color: var(--background-dark);
+}
+ /* Light theme (default) */
     body {
       margin: 0;
       background-color: var(--background-light);
@@ -373,49 +428,6 @@
       background-color: #aaa;
       cursor: not-allowed;
     }
-   .nav-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin: 1.5rem 0 1rem;
-  user-select: none;
-  flex-wrap: wrap;
-}
-
-.nav-button {
-  flex: 1 1 160px;          /* grow/shrink, min 160px */
-  max-width: 200px;         /* cap width */
-  display: flex;            /* ensures icon + text align neatly */
-  align-items: center;      /* vertical centering */
-  justify-content: center;  /* horizontal centering */
-  gap: 0.5rem;
-
-  background-color: var(--primary-light);
-  border: none;
-  border-radius: 10px;
-  padding: 0.75rem 1rem;
-  text-align: center;
-  color: rgb(211, 181, 181);
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 1rem;
-  line-height: 1.2;
-  box-shadow: 0 3px 10px rgba(212, 214, 0, 0.5);
-  transition: background-color 0.25s ease, transform 0.2s ease;
-  white-space: nowrap;
-  text-decoration: none;
-
-  min-height: 60px;   /* ✅ ensures all buttons are the same height */
-}
-
-  .nav-button:hover,
-  .nav-button:focus {
-      background-color: var(--accent);
-      color: var(--primary-dark);
-      outline: none;
-   }
-
-
     .agent-list {
       max-width: var(--max-width);
       margin: 2rem auto 4rem;
@@ -433,7 +445,7 @@
       cursor: pointer;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       user-select: none;
-      color: rgb(18, 12, 97);
+      color: white;
       font-weight: 700;
       font-size: 1.2rem;
     }
@@ -444,40 +456,7 @@
       outline: none;
       color: var(--primary-dark);
       background-color: var(--accent);
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .agent-list {
-        grid-template-columns: 1fr;
-        margin: 1rem auto 3rem;
-      }
-      .message {
-        max-width: 95%;
-      }
-      input[name="user_input"] {
-        max-width: 60%;
-      }
-      .document-info {
-        max-width: 95%;
-      }
-      form#chat-form {
-        padding: 0.8rem 0.8rem;
-      }
-      .nav-buttons {
-        gap: 0.5rem;
-      }
-      .nav-button {
-        font-size: 0.9rem;
-        padding: 0.6rem 1rem;
-      }
-      .quick-actions {
-        gap: 0.5rem;
-      }
-      .quick-action {
-        padding: 0.35rem 0.8rem;
-        font-size: 0.85rem;
-      }
+    
     }
     .suggested-questions {
       display: flex;
@@ -513,6 +492,126 @@
     .hidden {
       display: none;
     }
+    /* ===== NAVIGATION BUTTONS - HORIZONTAL ROW ===== */
+.nav-buttons {
+    display: flex;
+    flex-direction: row;           /* Always horizontal */
+    justify-content: flex-start;   /* Align to left so scroll works */
+    gap: 1rem;
+    margin: 1.5rem 0 1rem;
+    user-select: none;
+    overflow-x: auto;              /* Enable horizontal scroll */
+    overflow-y: hidden;
+    white-space: nowrap;
+    padding: 0.5rem 0;
+    scrollbar-width: thin;         /* Firefox */
+}
+
+.nav-buttons::-webkit-scrollbar {
+    height: 6px;                   /* Slim horizontal scrollbar */
+}
+.nav-buttons::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.3);
+    border-radius: 3px;
+}
+
+/* Style for all nav buttons */
+.nav-button {
+    width: 160px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-light);
+    border: none;
+    border-radius: 10px;
+    padding: 0;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1.2;
+    box-shadow: 0 3px 10px rgba(212, 214, 0, 0.5);
+    transition: all 0.25s ease;
+    white-space: nowrap;
+    text-decoration: none;
+    flex-shrink: 0; /* Prevent shrinking so buttons stay same size */
+    box-sizing: border-box;
+}
+
+/* Specifically target the form button to ensure same size */
+.nav-buttons form {
+    display: flex;
+    flex-shrink: 0;
+    width: 160px;
+    height: 50px;
+}
+
+.nav-buttons form .nav-button {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hover/Focus states */
+.nav-button:hover,
+.nav-button:focus {
+    background-color: var(--accent);
+    color: var(--primary-dark);
+    outline: none;
+    transform: translateY(-2px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .nav-button,
+    .nav-buttons form {
+        width: 150px;
+        height: 48px;
+    }
+    .nav-button {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-button,
+    .nav-buttons form {
+        width: 140px;
+        height: 46px;
+    }
+    .nav-button {
+        font-size: 0.85rem;
+    }}
+    .nav-buttons {
+    display: flex;
+    justify-content: center; /* This centers the buttons horizontally */
+    align-items: center; /* This centers the buttons vertically if needed */
+    gap: 1rem;
+    margin: 1.5rem auto; /* Auto margins help with centering */
+    user-select: none;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+    width: fit-content; /* Makes container only as wide as its content */
+    max-width: 100%; /* Prevents overflow on small screens */
+}
+
+/* If you want to center the entire section including the form */
+.nav-buttons form {
+    display: flex;
+    justify-content: center;
+}
+
+/* For very small screens where buttons might wrap */
+@media (max-width: 480px) {
+    .nav-buttons {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
     /* Remove button underlines and set consistent look */
     .nav-button,
     .suggestion-bubble,
@@ -787,4 +886,219 @@ button {
   background-color: var(--primary);
   color: white;
   box-shadow: 0 0 10px var(--primary-light);
+}
+/* ===== RESPONSIVE IMPROVEMENTS ===== */
+
+/* Improved header responsiveness */
+@media (max-width: 768px) {
+  .main-header {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .header-left, .header-center, .header-right {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .header-left {
+    order: 2;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  
+  .header-center {
+    order: 1;
+  }
+  
+  .header-right {
+    order: 3;
+    justify-content: center;
+  }
+}
+
+/* Suggestion bubbles improvements */
+.suggestion-bubbles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(0.5rem, 1.5vw, 1rem);
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.suggestion-bubbles button {
+  padding: 0.75rem 1.25rem;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  min-height: 44px;
+  border-radius: 0.5rem;
+  background-color: transparent;
+  border: 2px solid var(--primary-light);
+  color: var(--primary-light);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: normal;
+}
+
+.suggestion-bubbles button:hover {
+  background-color: var(--primary-light);
+  color: white;
+}
+
+/* Improved navigation buttons for mobile */
+@media (max-width: 768px) {
+  .nav-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .nav-button {
+    max-width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Chat form improvements for mobile */
+@media (max-width: 768px) {
+  #chat-form {
+    flex-direction: column;
+    padding: 1rem;
+  }
+  
+  input[name="user_input"] {
+    max-width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Search Container - Centered */
+.search-container {
+    position: relative;
+    max-width: 420px;
+    margin: 25px auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Search Input */
+#searchInput {
+    width: 100%;
+    max-width: 420px;
+    padding: 12px 20px;
+    border-radius: 30px;
+    border: 2px solid var(--primary);
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.3s, box-shadow 0.3s, background 0.3s;
+    background-color: var(--card-bg-light);
+    box-sizing: border-box;
+}
+
+#searchInput:focus {
+    border-color: var(--primary-light);
+    background-color: #fff;
+    box-shadow: 0 0 15px 4px rgba(0, 150, 136, 0.6);
+}
+
+/* Suggestions List - Centered */
+.suggestions-list {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 420px;
+    background: var(--card-bg-light);
+    border: 1px solid var(--primary-light);
+    border-radius: 15px;
+    max-height: 240px;
+    overflow-y: auto;
+    z-index: 15;
+    margin-top: 5px;
+    padding: 5px 0;
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    transition: box-shadow 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .search-container {
+        width: 90%;
+        padding: 0 1rem;
+    }
+    
+    #searchInput,
+    .suggestions-list {
+        max-width: 100%;
+    }
+}
+
+/* For very small screens */
+@media (max-width: 480px) {
+    .search-container {
+        width: 95%;
+    }
+    
+    #searchInput {
+        padding: 10px 16px;
+        font-size: 0.95rem;
+    }
+}
+
+/* Agent grid improvements */
+@media (max-width: 768px) {
+  .agent-list {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Button container improvements */
+@media (max-width: 768px) {
+  .button-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .custom-button {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+/* Message improvements for mobile */
+@media (max-width: 768px) {
+  .message {
+    max-width: 90%;
+    font-size: 0.95rem;
+  }
+}
+
+/* Ensure proper text sizing on mobile inputs */
+@media (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* Very small devices */
+@media (max-width: 360px) {
+  .page-wrapper {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  
+  header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .agent-selector {
+    font-size: 0.85rem;
+  }
 }
